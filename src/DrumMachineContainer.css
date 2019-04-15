@@ -1,0 +1,29 @@
+.drumMachineContainer {
+    display: flex;
+    width: 80vw;
+    height: 600px;
+    margin: auto;
+    border: 1px solid black;
+
+}
+
+.track {
+    display: flex;
+    height: 100px;
+    border-bottom: 1px solid black;
+    width: 100%;
+
+}
+
+.nameCol {
+    width: 5.5%;
+    height: 100%;
+    border-right: 1px solid black;
+}
+
+.pad {
+    /* width: 11%; */
+    flex-grow: 1;
+    height: 100%;
+    border-right: 1px solid black;
+}
