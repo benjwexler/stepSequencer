@@ -8,8 +8,8 @@ import PadConsumer from "./PadConsumer";
 import "./App.css";
 import { DrumMachineContainer } from "./DrumMachineContainer";
 
-
-
+var context;
+var dogBarkingBuffer = null;
 export default class App extends React.Component {
   
   constructor(props) {
@@ -19,12 +19,11 @@ export default class App extends React.Component {
       currentPad: 1,
       track1: {
         name: "Kick",
-        soundfile: undefined,
-        context: undefined,
-        gainNode: undefined,
-        playSound: this.playSound('1', './kick2.wav')
-      }
+        soundfile: './Kick2.wav',
+        padsOn: {},
+      },
     };
+    this.loadDogSound = this.loadDogSound.bind(this);
   }
 
   sequence = () => {
@@ -33,91 +32,92 @@ export default class App extends React.Component {
     if (currentPad === 9) {
       currentPad = 1;
     }
+    // this.loadDogSound('./Kick2.wav')
     this.setState({
       currentPad: currentPad
     });
   };
 
-  initiateAudioContext = () => {
-
-    let that = this
-
-    if (that.initiateOnce === 0) {
-        let AudioContext = window.AudioContext || window.webkitAudioContext;
-        window["AudioContext"] = window.AudioContext || window.webkitAudioContext;
-
-        let context = new AudioContext();
-        window["context"] = new AudioContext()
-        window["gainNode"] = context.createGain();
-        let gainNode = context.createGain();
-
-
-        that.setState({
-            context: context,
-            gainNode: gainNode
-
-        }, () => {
-
-          console.log(this.state)
-          
-
-        }
-        
-        )
-
-        that.initiateOnce = 1
-
+  setPadsOn = (padNum) => {
+    let track1 = {...this.state.tracks1}
+    let currentPadsOn = {...this.state.track1.padsOn};
+    
+    if( !this.state.track1.padsOn[padNum]) {
+      currentPadsOn[padNum] = true;
+      track1.padsOn = currentPadsOn
     } else {
-        window.removeEventListener("mouseover", this.initiateAudioContext)
+      currentPadsOn[padNum] = false;
+      track1.padsOn = currentPadsOn
+      
     }
+    this.setState({
+      track1: track1
+    })
+  }
+
+
+  // var context;
+
+
+
+loadDogSound = (url) => {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+  request.responseType = 'arraybuffer';
+
+  // Decode asynchronously
+  request.onload = function() {
+    context.decodeAudioData(request.response, function(buffer) {
+      dogBarkingBuffer = buffer;
+      var source = context.createBufferSource(); // creates a sound source
+    source.buffer = buffer;                    // tell the source which sound to play
+    source.connect(context.destination);       // connect the source to the context's destination (the speakers)
+    source.start(0);
+    });
+  }
+  request.send();
 }
 
-playSound = (number, soundFile) => {
-  let that = this;
-  let gainNode = that.state.gainNode;
-  window[`bufferNode${number}`] = that.state.context.createBufferSource();
 
-  var request = new XMLHttpRequest();
-  request.open('GET', soundFile, true);
-  request.responseType = 'arraybuffer';
-  console.log(that.state.context)
-  request.onloadend = function () {
 
-    console.log(request)
-     that.state.context.decodeAudioData(
-          request.response,
-          function (buffer) {
-              // window[`bufferNode${number}`].buffer = buffer;
-              // window[`bufferNode${number}`].connect(gainNode);
-              // gainNode.connect(that.state.context.destination);
-              // gainNode.gain.setValueAtTime(1, that.state.context.currentTime);
-              // window[`bufferNode${number}`].start()
-          },
-          function (e) { console.log("Error with decoding audio data" + e.err); }
-      );
-  };
-  request.send()
+
   
-};
+
+
+
+
   
 
   componentDidMount() {
-    console.log("Hi");
-    window.addEventListener("mouseover", this.initiateAudioContext)
-   
+let that = this
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelector('.nameCol').addEventListener('click', function() {
+              window.AudioContext = window.AudioContext||window.webkitAudioContext;
+          context = new AudioContext();
+            console.log('Playback resumed successfully');
+            setInterval(that.sequence, 1000);
+            // that.loadDogSound('./HornLine.mp3')
+          });
+      });
+
+       
+
+
+
 
 
   
     
-
+// 
     // setInterval(this.sequence, 1000);
   }
 
   render() {
+    let that = this;
     return (
       // We wrap all of the components that need access
       // to the lastName property in FamilyProvider.
-      <AppProvider value={this.state}>
+      <AppProvider value={{state: this.state, playSound: this.loadDogSound, setPadsOn: this.setPadsOn}}>
         <DrumMachineContainer>
           <TrackConsumer />
         </DrumMachineContainer>
@@ -126,14 +126,12 @@ playSound = (number, soundFile) => {
   }
 }
 
-// const DrumMachineContainer = () => {
-//   return <AppConsumer>{context => <Track trackName="Kick"/>}</AppConsumer>;
-// };
+
 
 const TrackConsumer = () => {
   return (
     <AppConsumer>
-      {context => <Track onClick={context.playSound} trackName={context.track1.name} />}
+      {context => <Track trackName={context.state.track1.name} />}
     </AppConsumer>
   );
 };

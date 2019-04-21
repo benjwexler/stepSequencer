@@ -4,7 +4,8 @@ import Pad from "./Pad";
 
 export const PadConsumer = ({padNumber}) => {
     return <AppConsumer>{context => {
-        console.log(context.currentPad, padNumber)
-        return (<Pad padNumber={padNumber} currentPad={padNumber === context.currentPad}/>)}
+        console.log(context.state.currentPad, padNumber)
+        console.log(context);
+        return (<Pad setPadsOn={context.setPadsOn} playSound={context.playSound} trackInfo={context.state.track1} padNumber={padNumber} currentPad={padNumber === context.state.currentPad}/>)}
     }</AppConsumer>;
   }
