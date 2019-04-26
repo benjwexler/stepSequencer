@@ -21,7 +21,7 @@ import './DrumMachineContainer.css';
     }
 
     loadDogSound = (url) => {
-      console.log("Hey")
+      // console.log("Hey")
       var request = new XMLHttpRequest();
       request.open('GET', url, true);
       request.responseType = 'arraybuffer';
@@ -42,8 +42,9 @@ import './DrumMachineContainer.css';
     togglePad = () => {
       // this.loadDogSound('./Kick2.wav')
       console.log(this.props.padNumber)
-      this.setPadsOn(this.props.padNumber)
-      this.playSound('./Kick2.wav')
+      console.log(this.props.trackNum)
+      this.setPadsOn(this.props.padNumber, this.props.trackNum)
+      // this.playSound('./Kick2.wav')
       this.setState({
         padOn: !this.state.padOn
       })
@@ -55,7 +56,7 @@ import './DrumMachineContainer.css';
       document.querySelector('.nameCol').addEventListener('click', function() {
               window.AudioContext = window.AudioContext||window.webkitAudioContext;
           context = new AudioContext();
-            console.log('Playback resumed successfully');
+            // console.log('Playback resumed successfully');
             setInterval(that.sequence, 1000);
             // that.loadDogSound('./HornLine.mp3')
           });
@@ -64,8 +65,8 @@ import './DrumMachineContainer.css';
 
 
 render(props) {
-  console.log(this.props)
-console.log(trackInfo);
+//   console.log(this.props)
+// console.log(trackInfo);
 let {padNumber, currentPad, trackInfo} = this.props;
   
 
