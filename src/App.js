@@ -161,7 +161,7 @@ const TrackConsumer = () => {
     let tracksArr = Object.keys(context.state.tracks);
 
     let tracks = tracksArr.map((track, i) => {
-      return <Track noteDivision={context.state.noteDivision} trackNum={`track${i+1}`} trackName={context.state.tracks[`track${i+1}`].name} />
+      return <Track padsOn={context.state.tracks[`track${i+1}`].padsOn} noteDivision={context.state.noteDivision} trackNum={`track${i+1}`} trackName={context.state.tracks[`track${i+1}`].name} />
     })
 
         return (

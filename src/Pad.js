@@ -34,24 +34,23 @@ import './DrumMachineContainer.css';
     }
 
     componentDidMount() {
-      let that = this
-    document.addEventListener("DOMContentLoaded", function () {
-      document.querySelector('.nameCol').addEventListener('click', function() {
-              window.AudioContext = window.AudioContext||window.webkitAudioContext;
-          context = new AudioContext();
-            // console.log('Playback resumed successfully');
-            setInterval(that.sequence, 1000);
-            // that.loadDogSound('./HornLine.mp3')
-          });
-      });
+    //   let that = this
+    // document.addEventListener("DOMContentLoaded", function () {
+    //   document.querySelector('.nameCol').addEventListener('click', function() {
+    //           window.AudioContext = window.AudioContext||window.webkitAudioContext;
+    //       context = new AudioContext();
+    //         // console.log('Playback resumed successfully');
+    //         setInterval(that.sequence, 1000);
+    //         // that.loadDogSound('./HornLine.mp3')
+    //       });
+    //   });
     }
 
 
 render(props) {
 //   console.log(this.props)
 // console.log(trackInfo);
-let {padNumber, currentPad, trackInfo} = this.props;
-  
+let {padNumber, currentPad, padOn, trackInfo} = this.props;
 
     let currentPadStyle;
     let padOnStyle;
@@ -59,11 +58,11 @@ let {padNumber, currentPad, trackInfo} = this.props;
         currentPadStyle = {border: '2px solid green'}
     }
 
-    if(this.state.padOn) {
+    if(padOn) {
       padOnStyle = {background: 'yellow'}
   }
 
-  if(currentPad && this.state.padOn) {
+  if(currentPad && padOn) {
     padOnStyle = {background: 'blue'}
   }
   return (
