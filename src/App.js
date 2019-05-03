@@ -15,31 +15,10 @@ export default class App extends React.Component {
     super(props);
     this.initiateOnce = 0;
     this.state = {
+      tempo: 80,
+      noteDivision: 16,
       currentPad: 1,
-      // track1: {
-      //   name: "Kick",
-      //   soundfile: "./Kick2.wav",
-      //   padsOn: {}
-      // },
-      // track2: {
-      //   name: "Snare",
-      //   soundfile: "./snare2.wav",
-      //   padsOn: {}
-      // },
       tracks: {
-        // {
-        //   trackNum: 1,
-        //   name: "Kick",
-        //   soundfile: "./Kick2.wav",
-        //   padsOn: {}
-        // },
-        // {
-        //   trackNum: 2,
-        //   name: "Snare",
-        //   soundfile: "./snare2.wav",
-        //   padsOn: {}
-        // },
-
         "track1": {
           name: "Kick",
           soundfile: "./Kick2.wav",
@@ -50,6 +29,11 @@ export default class App extends React.Component {
           soundfile: "./snare2.wav",
           padsOn: {}
         }, 
+        "track3": {
+          name: "Hat",
+          soundfile: "./hat.wav",
+          padsOn: {}
+        }, 
       }
     };
     this.loadDogSound = this.loadDogSound.bind(this);
@@ -57,7 +41,7 @@ export default class App extends React.Component {
 
   sequence = () => {
     let currentPad = this.state.currentPad + 1;
-    if (currentPad === 9) {
+    if (currentPad > this.state.noteDivision) {
       currentPad = 1;
     }
 
@@ -117,14 +101,27 @@ export default class App extends React.Component {
       document.querySelector(".nameCol").addEventListener("click", function() {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         context = new AudioContext();
-        // console.log('Playback resumed successfully');
-        setInterval(that.sequence, 1000);
-        // that.loadDogSound('./HornLine.mp3')
+        that.interval = setInterval(that.sequence, (60000) / (that.state.tempo * (that.state.noteDivision/4)) );
       });
     });
+  }
 
-    //
-    // setInterval(this.sequence, 1000);
+  componentDidUpdate(prevProps, prevState) {
+    let that = this;
+    if (prevState.tempo !== this.state.tempo || prevState.noteDivision !== this.state.noteDivision) {
+      clearInterval(this.interval);
+      this.interval = setInterval(that.sequence, (60000) / (that.state.tempo * (that.state.noteDivision/4)) );
+    }
+  }
+
+  handleTempoChange = (e) => {
+    this.setState({ tempo: Number(e.target.value) });
+    console.log("TRYING TO CHANGE TEMPO")
+  }
+
+  handleNoteDivisionChange = (e) => {
+    this.setState({ noteDivision: Number(e.target.innerText) });
+    console.log("TRYING TO CHANGE Note Division")
   }
 
   render() {
@@ -136,25 +133,41 @@ export default class App extends React.Component {
         value={{
           state: this.state,
           playSound: this.loadDogSound,
-          setPadsOn: this.setPadsOn
+          setPadsOn: this.setPadsOn,
+          handleTempoChange: this.handleTempoChange,
         }}
       >
+      
+       {/* <input value={this.state.tempo} onChange={this.handleTempoChange} /> */}
         <DrumMachineContainer>
           <TrackConsumer />
         </DrumMachineContainer>
+        <input type="range" min="20" max="200" value={this.state.tempo} class="slider" id="myRange" onChange={this.handleTempoChange} />
+        <button onClick={this.handleNoteDivisionChange}>8</button>
+        <button onClick={this.handleNoteDivisionChange}>16</button>
+        <button onClick={this.handleNoteDivisionChange}>32</button>
       </AppProvider>
     );
   }
 }
 
 const TrackConsumer = () => {
+  let that = this
+
   return (
     <AppConsumer>
       {context => {
+
+    let tracksArr = Object.keys(context.state.tracks);
+
+    let tracks = tracksArr.map((track, i) => {
+      return <Track noteDivision={context.state.noteDivision} trackNum={`track${i+1}`} trackName={context.state.tracks[`track${i+1}`].name} />
+    })
+
         return (
           <div style={{ width: "100%" }}>
-            <Track trackNum={"track1"} trackName={context.state.tracks["track1"].name} />
-            <Track trackNum={"track2"} trackName={context.state.tracks["track2"].name} />
+
+           {tracks}
           </div>
         );
       }}
