@@ -17,7 +17,7 @@ export default class App extends React.Component {
     this.state = {
       tempo: 80,
       noteDivision: 16,
-      currentPad: 1,
+      currentPad: 0,
       tracks: {
         "track1": {
           name: "Kick",
@@ -41,8 +41,8 @@ export default class App extends React.Component {
 
   sequence = () => {
     let currentPad = this.state.currentPad + 1;
-    if (currentPad > this.state.noteDivision) {
-      currentPad = 1;
+    if (currentPad >= this.state.noteDivision) {
+      currentPad = 0;
     }
 
     let tracks = {...this.state.tracks};
@@ -56,7 +56,7 @@ export default class App extends React.Component {
 
 
     this.setState({
-      currentPad: currentPad
+      currentPad: Math.ceil(currentPad)
     });
   };
 
@@ -65,14 +65,14 @@ export default class App extends React.Component {
     let tracks = {...this.state.tracks};
 
      if (tracks[trackNum].padsOn[padNum]) {
-      tracks[trackNum].padsOn[padNum] = undefined;
+      delete tracks[trackNum].padsOn[padNum];
     } else {
       tracks[trackNum].padsOn[padNum] = true;
     }
 
     this.setState({
       tracks: tracks
-    });
+    }, console.log(this.state.tracks));
   };
 
 
@@ -116,12 +116,41 @@ export default class App extends React.Component {
 
   handleTempoChange = (e) => {
     this.setState({ tempo: Number(e.target.value) });
-    console.log("TRYING TO CHANGE TEMPO")
   }
 
   handleNoteDivisionChange = (e) => {
-    this.setState({ noteDivision: Number(e.target.innerText) });
-    console.log("TRYING TO CHANGE Note Division")
+ 
+    let tracks = {...this.state.tracks};
+    let tracksArr = Object.keys(tracks);
+
+    let newDivision = Number(e.target.innerText);
+    let oldDivision = this.state.noteDivision;
+
+    let change = newDivision/oldDivision;
+
+    tracksArr.forEach((track, i) => {
+        let padsOn = Object.keys(tracks[`track${i+1}`].padsOn)
+        let newPadsOnObj = {};
+        padsOn.forEach( (padNum) => {
+          // if(padNum) {
+
+          // }
+          console.log(padNum)
+          newPadsOnObj[padNum * change] = true
+        })
+
+        tracks[`track${i+1}`].padsOn = newPadsOnObj
+    
+        console.log("NOTE DIVISION", this.state.noteDivision, Number(e.target.innerText))
+        
+    })
+
+    this.setState(
+      { noteDivision: Number(e.target.innerText),
+        tracks: tracks,
+        currentPad: this.state.currentPad*change
+      }, console.log(this.state.tracks)
+    );
   }
 
   render() {

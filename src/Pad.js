@@ -63,7 +63,7 @@ let {padNumber, currentPad, padOn, trackInfo} = this.props;
   }
 
   if(currentPad && padOn) {
-    padOnStyle = {background: 'blue'}
+    padOnStyle = {background: '#64D8D7'}
   }
   return (
     <div  onClick={() => this.togglePad()} style={{...currentPadStyle, ...padOnStyle}} data-pad-number={padNumber} className="pad">

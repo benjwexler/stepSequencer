@@ -10,7 +10,7 @@ export const Track = (props) => {
   let pads = [];
 
   for(let i=0; i<props.noteDivision; i++) {
-    pads.push(<PadConsumer padOn={props.padsOn[i+1]} key={i} trackNum={props.trackNum} padNumber={i+1}/>)
+    pads.push(<PadConsumer padOn={props.padsOn[i]} key={i} trackNum={props.trackNum} padNumber={i}/>)
   }
   return (
     <div onClick={props.onClick} className="track">
